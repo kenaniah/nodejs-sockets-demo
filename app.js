@@ -65,11 +65,16 @@ io.on('connection', function(socket){
 
 	//Notify others of an update to an existing user
 	socket.on('state updated', function(data){
+
 		console.log("Updating client: ", client_id, data)
+
+		Sprite.list[client_id].setState(data)
+
 		socket.broadcast.to('all').emit("update user", {
 			id: client_id,
 			state: data
 		})
+		
 	})
 
 })
