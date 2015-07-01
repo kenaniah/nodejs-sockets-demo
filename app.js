@@ -28,11 +28,27 @@ io.on('connection', function(socket){
 	sprite.setState(state)
 	console.log("Client's state is: ", state)
 
+	//Get a list of the other sockets
+	others = []
+	Object.keys(Sprite.list).forEach(function(id){
+		others.push({id: id, state: Sprite.list[id].getState()})
+	})
+
 	//Keep track of it
 	Sprite.list[client_id] = sprite
 
 	//Notify the client of its new state
 	socket.emit("setup", {
+		id: client_id,
+		state: state,
+		others: others
+	})
+
+	//Join the main room
+	socket.join('all')
+
+	//Broadcast to others
+	socket.broadcast.to('all').emit("new user", {
 		id: client_id,
 		state: state
 	})

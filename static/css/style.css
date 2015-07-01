@@ -19,7 +19,7 @@ MAIN {
 	background-size: 384px 256px;
 	height: 32px;
 	width: 32px;
-	position: relative;
+	position: absolute;
 	top: 0px;
 	left: 0px;
 	z-index: -1;
