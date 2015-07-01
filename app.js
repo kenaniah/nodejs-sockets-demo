@@ -63,6 +63,15 @@ io.on('connection', function(socket){
 		delete Sprite.list[client_id]
 	})
 
+	//Notify others of an update to an existing user
+	socket.on('state updated', function(data){
+		console.log("Updating client: ", client_id, data)
+		socket.broadcast.to('all').emit("update user", {
+			id: client_id,
+			state: data
+		})
+	})
+
 })
 
 // Instruct express to serve the static/ directory

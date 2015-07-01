@@ -6,13 +6,13 @@ Sprite.list = {}
  *
  * This class is used by both the browser and back-end.
  *
- * Sprites will emit a "change" event when their state is changed
+ * Sprites will emit a "sprite-changed" event when their state is changed
  * through its public methods.
  *
  * The entire state of a sprite can be accessed via getState()
  *
  * Passing a state into setState() will cause the sprite to match
- * that state without firing the change event.
+ * that state without firing the sprite-changed event.
  */
 function Sprite(element, bind_keys){
 
@@ -129,29 +129,29 @@ function Sprite(element, bind_keys){
             case "down":
             case "left":
             case "right":
-                self.face(key)
+                self.face(key, true)
                 self.move(key)
                 keyboardEvent.preventDefault()
                 break;
 
             //aswd mappings
             case "u+0041": //a
-                self.face('left')
+                self.face('left', true)
                 self.move('left')
 				keyboardEvent.preventDefault()
                 break;
             case "u+0053": //s
-                self.face('down')
+                self.face('down', true)
                 self.move('down')
 				keyboardEvent.preventDefault()
                 break;
             case "u+0057": //w
-                self.face('up')
+                self.face('up', true)
                 self.move('up')
 				keyboardEvent.preventDefault()
                 break;
             case "u+0044": //d
-                self.face('right')
+                self.face('right', true)
                 self.move('right')
 				keyboardEvent.preventDefault()
                 break;
@@ -196,10 +196,13 @@ function Sprite(element, bind_keys){
     /**
      * Changes the direction the character is facing
      */
-    this.face = function(direction){
+    this.face = function(direction, prevent_dispatch){
 
         character_state.facing = direction
-        redraw()
+		if(!prevent_dispatch){
+			dispatchEvent()
+        	redraw()
+		}
 
     }
 
@@ -227,6 +230,7 @@ function Sprite(element, bind_keys){
                 break;
         }
 
+		dispatchEvent()
 		redraw()
 
     }
@@ -248,6 +252,7 @@ function Sprite(element, bind_keys){
             character_state.spriteIndex = 0
         }
 
+		dispatchEvent()
         redraw()
 
     }
@@ -264,9 +269,28 @@ function Sprite(element, bind_keys){
 		}
 		character_state.animate = !!enabled
 
+		dispatchEvent()
 		redraw()
 
     }
+
+	/**
+	 * Dispatches a sprite-changed event when the sprite is
+	 * changed from anything but setState()
+	 */
+	function dispatchEvent(){
+
+		if(!element) return
+
+		var event = new CustomEvent('sprite-changed', {
+			bubbles: true,
+			detail: self.getState()
+		})
+
+		element.dispatchEvent(event)
+
+	}
+
 
 	/**
 	 * Returns the current state of the sprite

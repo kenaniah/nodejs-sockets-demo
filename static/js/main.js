@@ -25,7 +25,8 @@ window.addEventListener('load', function(){
 
 	//Creates the user's sprite
 	socket.on('setup', function(data){
-		console.log("Setting up my character")
+
+		console.log("Setting up my character", data)
 
 		//Register our client id
 		client_id = data.id
@@ -43,13 +44,22 @@ window.addEventListener('load', function(){
 	//Shows the sprite for a user that just joined
 	socket.on("new user", function(data){
 
+		console.log("someone joined", data)
+
 		//Create another user's sprite
 		createSprite(data, false)
 
 	})
 
+	socket.on("update user", function(data){
+		console.log("They changed", data)
+		Sprite.list[data.id].setState(data.state)
+	})
+
 	//Remove a user on disconnect
 	socket.on("remove user", function(data){
+
+		console.log("They disconnected", data)
 
 		//Remove their sprite from the dom
 		var element = document.getElementById(data.id)
@@ -58,6 +68,12 @@ window.addEventListener('load', function(){
 		//Delete the sprite
 		delete Sprite.list[data.id]
 
+	})
+
+	//Update others when our sprite changes
+	document.addEventListener("sprite-changed", function(event){
+		console.log("I changed", event.detail)
+		socket.emit("state updated", event.detail)
 	})
 
 })
