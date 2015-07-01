@@ -25,7 +25,13 @@ function Sprite(element, character_idx){
 	var character_state = {
 
 		//Tracks which character we're displaying
-		spriteIndex: character_idx || 0
+		spriteIndex: character_idx || 0,
+
+		//Tracks which direction the character is facing
+		facing: "down",
+
+		//Whether animation is enabled on this character
+		animate: true
 
 	}
 
@@ -34,13 +40,6 @@ function Sprite(element, character_idx){
 
     //Which frame number we are in (3 frames total)
     var frame = 0
-
-    //Tracks which set of sprites to animate
-    var offsetX = 0
-    var offsetY = 0
-
-    //Track the offset for which way the character is facing
-    var dirOffset = 0;
 
     /**
      * Moves to the sprite's next animation frame
@@ -53,8 +52,7 @@ function Sprite(element, character_idx){
             frame = 0
         }
 
-        //Redraw the character
-        redraw();
+        redraw()
 
     }
 
@@ -63,16 +61,46 @@ function Sprite(element, character_idx){
      */
     function redraw(){
 
+		if(!element) return;
+
+		//Track animation
+		if(character_state.animate && !animateInterval){
+            animateInterval = window.setInterval(nextFrame, 400)
+        }else if(!character_state.animate && animateInterval){
+			window.clearInterval(animateInterval)
+            animateInterval = null
+        }
+
+		//Determine which direction the character is facing
+		var dirOffset = 0;
+		switch(character_state.facing){
+            case "left":
+                dirOffset = 32;
+                break;
+            case "up":
+                dirOffset = 96;
+                break;
+            case "right":
+                dirOffset = 64;
+                break;
+            case "down":
+                dirOffset = 0;
+                break;
+        }
+
 		//Bump certain sprites up a few pixels if not facing down
 		hack_adj = 0
 		if(_adjustImageIndexes.indexOf(character_state.spriteIndex) != -1 && dirOffset > 0){
 			hack_adj = -1
 		}
 
-		if(element){
-        	element.style.backgroundPositionX = -(offsetX + frame * 32) + "px"
-        	element.style.backgroundPositionY = -(offsetY + dirOffset) + hack_adj + "px"
-		}
+		//Move the background image to the current character
+        var offsetX = (character_state.spriteIndex % 4) * 96
+        var offsetY = Math.floor(character_state.spriteIndex / 4) * 128
+
+		//Redraw the character
+    	element.style.backgroundPositionX = -(offsetX + frame * 32) + "px"
+    	element.style.backgroundPositionY = -(offsetY + dirOffset) + hack_adj + "px"
 
     }
 
@@ -150,29 +178,17 @@ function Sprite(element, character_idx){
     }
 
     //Bind the keyboard events
-    window.addEventListener('keydown', keyHandler);
+	if(element){
+    	window.addEventListener('keydown', keyHandler);
+	}
 
     /**
      * Changes the direction the character is facing
      */
     this.face = function(direction){
 
-        switch(direction){
-            case "left":
-                dirOffset = 32;
-                break;
-            case "up":
-                dirOffset = 96;
-                break;
-            case "right":
-                dirOffset = 64;
-                break;
-            case "down":
-                dirOffset = 0;
-                break;
-        }
-
-        redraw();
+        character_state.facing = direction
+        redraw()
 
     }
 
@@ -228,30 +244,22 @@ function Sprite(element, character_idx){
             character_state.spriteIndex = 0
         }
 
-        //Move the background image to the new characters
-        offsetX = (character_state.spriteIndex % 4) * 96
-        offsetY = Math.floor(character_state.spriteIndex / 4) * 128
-
-        redraw();
+        redraw()
 
     }
 
     /**
      * Enables / disables animation
      */
-    this.animate = function(){
+    this.animate = function(enabled){
 
-        if(animateInterval){
-            window.clearInterval(animateInterval)
-            animateInterval = null
-        }else{
-            animateInterval = window.setInterval(nextFrame, 400)
-        }
+		//Determine whether to enable or disable animation
+		if(typeof enabled == "undefined"){
+			//Toggle it
+			enabled = !character_state.animate
+		}
 
-        //Force animation to start?
-        if(arguments.length && arguments[0] && !animateInterval){
-            animateInterval = window.setInterval(nextFrame, 400)
-        }
+		redraw()
 
     }
 
@@ -267,6 +275,7 @@ function Sprite(element, character_idx){
 	 */
 	this.setState = function(state){
 		character_state = state
+		redraw()
 	}
 
     /**
