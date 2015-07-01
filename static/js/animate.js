@@ -14,7 +14,7 @@ Sprite.list = {}
  * Passing a state into setState() will cause the sprite to match
  * that state without firing the change event.
  */
-function Sprite(element, character_idx){
+function Sprite(element, bind_keys){
 
 	//A hack to adjust image headings for broken chars
 	var _adjustImageIndexes = [3, 4, 6]
@@ -25,7 +25,7 @@ function Sprite(element, character_idx){
 	var character_state = {
 
 		//Tracks which character we're displaying
-		spriteIndex: character_idx || 0,
+		spriteIndex: 0,
 
 		//Tracks which direction the character is facing
 		facing: "down",
@@ -186,7 +186,7 @@ function Sprite(element, character_idx){
     }
 
     //Bind the keyboard events
-	if(element){
+	if(bind_keys){
     	window.addEventListener('keydown', keyHandler);
 	}
 

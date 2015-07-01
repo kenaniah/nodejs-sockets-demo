@@ -17,7 +17,25 @@ io.on('connection', function(socket){
 	var client_id = uuid.v1()
 	console.log("Connecting client. Assigning as: " + client_id)
 
-	Sprite.list[client_id] = Sprite.new(null, Math.floor(Math.random() * 8))
+	//Create a new sprite for the new user
+	var sprite = new Sprite;
+
+	//Randomize the sprite a bit
+	var state = sprite.getState()
+	state.spriteIndex = Math.floor(Math.random() * 8)
+	state.x = Math.floor(Math.random() * 40) * 16
+	state.y = Math.floor(Math.random() * 10) * 16
+	sprite.setState(state)
+	console.log("Client's state is: ", state)
+
+	//Keep track of it
+	Sprite.list[client_id] = sprite
+
+	//Notify the client of its new state
+	socket.emit("setup", {
+		id: client_id,
+		state: state
+	})
 
 })
 

@@ -22,8 +22,10 @@ MAIN {
 	position: relative;
 	top: 0px;
 	left: 0px;
-	transition: top 0.125s, left 0.125s;
 	z-index: -1;
 	zoom: 200%;
 	display: inline-block;
+}
+.sprite .transition {
+	transition: top 0.125s, left 0.125s;
 }
