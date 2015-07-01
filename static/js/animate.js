@@ -67,6 +67,9 @@ function Sprite(element, bind_keys){
 
 		if(!element) return;
 
+		//HACK - Always animate only the sprite that's controlled
+		character_state.animate = !!bind_keys
+
 		//Track animation
 		if(character_state.animate && !animateInterval){
             animateInterval = window.setInterval(nextFrame, 400)

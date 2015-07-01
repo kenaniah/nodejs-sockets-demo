@@ -53,6 +53,16 @@ io.on('connection', function(socket){
 		state: state
 	})
 
+	//Notify other connections of a disconnect
+	socket.on('disconnect', function(){
+		console.log("Client disconnected: " + client_id)
+		socket.broadcast.to('all').emit("remove user", {
+			id: client_id
+		})
+		//Remove this sprite
+		delete Sprite.list[client_id]
+	})
+
 })
 
 // Instruct express to serve the static/ directory

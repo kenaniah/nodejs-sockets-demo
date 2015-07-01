@@ -4,6 +4,7 @@ window.addEventListener('load', function(){
 
 		//Create a DOM element
 		var element = document.createElement("DIV")
+		element.id = data.id
 
 		//Create the sprite
 		var sprite = new Sprite(element, bind_keys)
@@ -28,6 +29,8 @@ window.addEventListener('load', function(){
 
 		//Register our client id
 		client_id = data.id
+
+		//Create our sprite
 		createSprite(data, true)
 
 		//Set up the other sprites
@@ -37,14 +40,23 @@ window.addEventListener('load', function(){
 
 	})
 
+	//Shows the sprite for a user that just joined
 	socket.on("new user", function(data){
 
-		console.log("new user")
-
-		if(data.id == client_id) return;
-
-		//Register a different user
+		//Create another user's sprite
 		createSprite(data, false)
+
+	})
+
+	//Remove a user on disconnect
+	socket.on("remove user", function(data){
+
+		//Remove their sprite from the dom
+		var element = document.getElementById(data.id)
+		element.parentNode.removeChild(element)
+
+		//Delete the sprite
+		delete Sprite.list[data.id]
 
 	})
 
