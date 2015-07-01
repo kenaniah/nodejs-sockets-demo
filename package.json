@@ -1,0 +1,19 @@
+{
+  "name": "sockets-code-challenge",
+  "version": "1.0.0",
+  "description": "Code challenge to complete a Node.js app",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kenaniah/sockets-code-challenge.git"
+  },
+  "author": "Kenaniah Cerny",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kenaniah/sockets-code-challenge/issues"
+  },
+  "homepage": "https://github.com/kenaniah/sockets-code-challenge#readme"
+}
