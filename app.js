@@ -17,6 +17,8 @@ io.on('connection', function(socket){
 	var client_id = uuid.v1()
 	console.log("Connecting client. Assigning as: " + client_id)
 
+	Sprite.list[client_id] = Sprite.new(null, Math.floor(Math.random() * 8))
+
 })
 
 // Instruct express to serve the static/ directory

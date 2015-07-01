@@ -31,7 +31,11 @@ function Sprite(element, character_idx){
 		facing: "down",
 
 		//Whether animation is enabled on this character
-		animate: true
+		animate: true,
+
+		//Current location from top and left
+		x: 0,
+		y: 0
 
 	}
 
@@ -97,6 +101,10 @@ function Sprite(element, character_idx){
 		//Move the background image to the current character
         var offsetX = (character_state.spriteIndex % 4) * 96
         var offsetY = Math.floor(character_state.spriteIndex / 4) * 128
+
+		//Move the character
+		element.style.left = character_state.x + "px"
+		element.style.top = character_state.y + "px"
 
 		//Redraw the character
     	element.style.backgroundPositionX = -(offsetX + frame * 32) + "px"
@@ -200,30 +208,23 @@ function Sprite(element, character_idx){
         //How many pixels to travel?
         var distance = distance_pixels || 16;
 
-        //Where is the character currently?
-        var left = parseInt(element.style.left) || 0
-        var top = parseInt(element.style.top) || 0
-
+        //Move the character
         switch(direction){
             case "left":
-                left -= distance
+                character_state.x -= distance
                 break;
             case "up":
-                top -= distance
+                character_state.y -= distance
                 break;
             case "right":
-                left += distance
+                character_state.x += distance
                 break;
             case "down":
-                top += distance
+                character_state.y += distance
                 break;
         }
 
-        //Move the character
-		if(element){
-        	element.style.left = left + "px"
-        	element.style.top = top + "px"
-		}
+		redraw()
 
     }
 
@@ -258,6 +259,7 @@ function Sprite(element, character_idx){
 			//Toggle it
 			enabled = !character_state.animate
 		}
+		character_state.animate = !!enabled
 
 		redraw()
 
