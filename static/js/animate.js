@@ -1,6 +1,19 @@
 // Tracks a list of all sprites
 Sprite.list = {}
 
+/**
+ * Class to manage sprites
+ *
+ * This class is used by both the browser and back-end.
+ *
+ * Sprites will emit a "change" event when their state is changed
+ * through its public methods.
+ *
+ * The entire state of a sprite can be accessed via getState()
+ *
+ * Passing a state into setState() will cause the sprite to match
+ * that state without firing the change event.
+ */
 function Sprite(element, character_idx){
 
 	//A hack to adjust image headings for broken chars
@@ -8,11 +21,16 @@ function Sprite(element, character_idx){
 
     var self = this
 
+	//Track a state object
+	var character_state = {
+
+		//Tracks which character we're displaying
+		spriteIndex: character_idx || 0
+
+	}
+
     //Tracks the window interval for animation
     var animateInterval;
-
-    //Tracks a reference to the character's DOM Element
-    var character = element
 
     //Which frame number we are in (3 frames total)
     var frame = 0
@@ -23,9 +41,6 @@ function Sprite(element, character_idx){
 
     //Track the offset for which way the character is facing
     var dirOffset = 0;
-
-    //Tracks which character we're displaying
-    var characterIndex = character_idx || 0;
 
     /**
      * Moves to the sprite's next animation frame
@@ -50,12 +65,14 @@ function Sprite(element, character_idx){
 
 		//Bump certain sprites up a few pixels if not facing down
 		hack_adj = 0
-		if(_adjustImageIndexes.indexOf(characterIndex) != -1 && dirOffset > 0){
+		if(_adjustImageIndexes.indexOf(character_state.spriteIndex) != -1 && dirOffset > 0){
 			hack_adj = -1
 		}
 
-        character.style.backgroundPositionX = -(offsetX + frame * 32) + "px"
-        character.style.backgroundPositionY = -(offsetY + dirOffset) + hack_adj + "px"
+		if(element){
+        	element.style.backgroundPositionX = -(offsetX + frame * 32) + "px"
+        	element.style.backgroundPositionY = -(offsetY + dirOffset) + hack_adj + "px"
+		}
 
     }
 
@@ -82,42 +99,52 @@ function Sprite(element, character_idx){
             case "u+0041": //a
                 self.face('left')
                 self.move('left')
+				keyboardEvent.preventDefault()
                 break;
             case "u+0053": //s
                 self.face('down')
                 self.move('down')
+				keyboardEvent.preventDefault()
                 break;
             case "u+0057": //w
                 self.face('up')
                 self.move('up')
+				keyboardEvent.preventDefault()
                 break;
             case "u+0044": //d
                 self.face('right')
                 self.move('right')
+				keyboardEvent.preventDefault()
                 break;
 
             //Change directions
             case "u+004a": //j
                 self.face('left')
+				keyboardEvent.preventDefault()
                 break;
             case "u+0049": //i
                 self.face('up')
+				keyboardEvent.preventDefault()
                 break;
             case "u+004b": //k
                 self.face('down')
+				keyboardEvent.preventDefault()
                 break;
             case "u+004c": //l
                 self.face('right')
+				keyboardEvent.preventDefault()
                 break;
 
             //Change characters
             case "enter":
                 self.changeCharacter()
+				keyboardEvent.preventDefault()
                 break;
 
             //Start / stop animation
             case "u+0020":
                 self.animate()
+				keyboardEvent.preventDefault()
                 break;
         }
     }
@@ -158,8 +185,8 @@ function Sprite(element, character_idx){
         var distance = distance_pixels || 16;
 
         //Where is the character currently?
-        var left = parseInt(character.style.left) || 0
-        var top = parseInt(character.style.top) || 0
+        var left = parseInt(element.style.left) || 0
+        var top = parseInt(element.style.top) || 0
 
         switch(direction){
             case "left":
@@ -177,8 +204,10 @@ function Sprite(element, character_idx){
         }
 
         //Move the character
-        character.style.left = left + "px"
-        character.style.top = top + "px"
+		if(element){
+        	element.style.left = left + "px"
+        	element.style.top = top + "px"
+		}
 
     }
 
@@ -189,19 +218,19 @@ function Sprite(element, character_idx){
 
         //Set the new index
         if(character_idx === undefined){
-            characterIndex++
+            character_state.spriteIndex++
         }else{
-            characterIndex = character_idx
+            character_state.spriteIndex = character_idx
         }
 
         //Loop the index if needed
-        if(characterIndex >= 8){
-            characterIndex = 0
+        if(character_state.spriteIndex >= 8){
+            character_state.spriteIndex = 0
         }
 
         //Move the background image to the new characters
-        offsetX = (characterIndex % 4) * 96
-        offsetY = Math.floor(characterIndex / 4) * 128
+        offsetX = (character_state.spriteIndex % 4) * 96
+        offsetY = Math.floor(character_state.spriteIndex / 4) * 128
 
         redraw();
 
@@ -226,14 +255,29 @@ function Sprite(element, character_idx){
 
     }
 
+	/**
+	 * Returns the current state of the sprite
+	 */
+	this.getState = function(){
+		return character_state
+	}
+
+	/**
+	 * Sets the current state of the sprite (without firing chage)
+	 */
+	this.setState = function(state){
+		character_state = state
+	}
+
     /**
      * Returns a reference to the DOM for the sprite
      */
     this.getElement = function(){
-        return character
+        return element
     }
 
-    //Set the initial character
-    this.changeCharacter(characterIndex)
-
 }
+
+// Expose this as a node module
+if(typeof module === 'undefined') module = {}
+module.exports = Sprite

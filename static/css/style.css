@@ -8,7 +8,6 @@ HTML {
 MAIN {
 	position: absolute;
 	padding: 16px;
-	text-align: center;
 	border: 1px solid #555555;
 	top: 16px;
 	left: 16px;
@@ -23,6 +22,7 @@ MAIN {
 	position: relative;
 	top: 0px;
 	left: 0px;
+	transition: top 0.125s, left 0.125s;
 	z-index: -1;
 	zoom: 200%;
 	display: inline-block;
