@@ -1,5 +1,6 @@
 window.addEventListener('load', function(){
 
+	//Handles the creation of sprite objects and their DOM
 	function createSprite(data, bind_keys){
 
 		//Create a DOM element
@@ -51,9 +52,13 @@ window.addEventListener('load', function(){
 
 	})
 
+	//Updates another user's position
 	socket.on("update user", function(data){
+
 		console.log("They changed", data)
+
 		Sprite.list[data.id].setState(data.state)
+
 	})
 
 	//Remove a user on disconnect
@@ -70,10 +75,14 @@ window.addEventListener('load', function(){
 
 	})
 
-	//Update others when our sprite changes
+	//Let other users know when our sprite changes
 	document.addEventListener("sprite-changed", function(event){
+
 		console.log("I changed", event.detail)
+
+		//Tell the server about the changes made to ourself
 		socket.emit("state updated", event.detail)
+
 	})
 
 })

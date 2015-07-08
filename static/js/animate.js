@@ -232,7 +232,7 @@ function Sprite(element, bind_keys){
     this.move = function(direction, distance_pixels){
 
         //How many pixels to travel?
-        var distance = distance_pixels || 4;
+        var distance = distance_pixels || 12;
 
         //Move the character
         switch(direction){
