@@ -201,7 +201,7 @@ function Sprite(element, bind_keys){
     	window.addEventListener('keydown', keyHandler)
 		window.addEventListener('keyup', keyHandler)
 
-		//Run every 32 ms
+		//Run every 100 ms
 		window.setInterval(function(){
 			var dirs = Object.keys(moving)
 			for(var i = 0; i < dirs.length; i++){
@@ -209,7 +209,7 @@ function Sprite(element, bind_keys){
 					self.move(dirs[i])
 				}
 			}
-		}, 32)
+		}, 100)
 
 	}
 

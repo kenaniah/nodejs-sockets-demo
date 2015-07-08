@@ -27,5 +27,5 @@ MAIN {
 	display: inline-block;
 }
 .sprite .transition {
-	transition: top 0.032s, left 0.032s;
+	transition: top 0.1s, left 0.1s;
 }
