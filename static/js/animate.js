@@ -39,6 +39,14 @@ function Sprite(element, bind_keys){
 
 	}
 
+	//Track whether our sprite is currently moving
+	var moving = {
+		up: false,
+		down: false,
+		left: false,
+		right: false
+	}
+
     //Tracks the window interval for animation
     var animateInterval;
 
@@ -130,29 +138,29 @@ function Sprite(element, bind_keys){
             case "left":
             case "right":
                 self.face(key, true)
-                self.move(key)
+                moving[key] = event.type == "keydown"
                 keyboardEvent.preventDefault()
                 break;
 
             //aswd mappings
             case "u+0041": //a
                 self.face('left', true)
-                self.move('left')
+                moving["left"] = event.type == "keydown"
 				keyboardEvent.preventDefault()
                 break;
             case "u+0053": //s
                 self.face('down', true)
-                self.move('down')
+                moving["down"] = event.type == "keydown"
 				keyboardEvent.preventDefault()
                 break;
             case "u+0057": //w
                 self.face('up', true)
-                self.move('up')
+                moving["up"] = event.type == "keydown"
 				keyboardEvent.preventDefault()
                 break;
             case "u+0044": //d
                 self.face('right', true)
-                self.move('right')
+                moving["right"] = event.type == "keydown"
 				keyboardEvent.preventDefault()
                 break;
 
@@ -190,7 +198,19 @@ function Sprite(element, bind_keys){
 
     //Bind the keyboard events
 	if(bind_keys){
-    	window.addEventListener('keydown', keyHandler);
+    	window.addEventListener('keydown', keyHandler)
+		window.addEventListener('keyup', keyHandler)
+
+		//Run every 32 ms
+		window.setInterval(function(){
+			var dirs = Object.keys(moving)
+			for(var i = 0; i < dirs.length; i++){
+				if(moving[dirs[i]]){
+					self.move(dirs[i])
+				}
+			}
+		}, 32)
+
 	}
 
     /**
@@ -212,7 +232,7 @@ function Sprite(element, bind_keys){
     this.move = function(direction, distance_pixels){
 
         //How many pixels to travel?
-        var distance = distance_pixels || 16;
+        var distance = distance_pixels || 4;
 
         //Move the character
         switch(direction){
