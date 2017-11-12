@@ -185,13 +185,13 @@ function Sprite(element, bind_keys){
 
 			//Change characters
 			case "Enter":
-				self.changeCharacter()
+				if (event.type == "keydown") self.changeCharacter()
 				keyboardEvent.preventDefault()
 				break;
 
 			//Start / stop animation
 			case " ":
-				self.animate()
+				if (event.type == "keydown") self.animate()
 				keyboardEvent.preventDefault()
 				break;
 		}
@@ -199,6 +199,7 @@ function Sprite(element, bind_keys){
 
 	//Bind the keyboard events
 	if(bind_keys){
+
 		window.addEventListener('keydown', keyHandler)
 		window.addEventListener('keyup', keyHandler)
 
